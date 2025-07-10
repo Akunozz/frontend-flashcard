@@ -1,38 +1,30 @@
 import { API_BASE_URL } from "@/lib/api";
 import type { ILogin } from "@/Interfaces/ILogin";
 
-interface LoginResponse {
-  access_token?: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
-  message?: string;
+type Role = ILogin["role"];
+
+interface CadastroResponse {
+  token?: string;
   error?: string;
 }
 
-export async function reqLogin(
+export async function reqCadastro(
+  name: ILogin["name"],
   email: ILogin["email"],
   password: ILogin["password"],
-  role: ILogin["role"]
-): Promise<LoginResponse> {
+  role: Role
+): Promise<CadastroResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/login`, {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password, role }),
+      body: JSON.stringify({ name, email, password, role }),
     });
     if (response.ok) {
       const data = await response.json();
-      return {
-        access_token: data.access_token,
-        user: data.user,
-        message: data.message,
-      };
+      return { token: data.token };
     } else {
       const error = await response.text();
       return { error };

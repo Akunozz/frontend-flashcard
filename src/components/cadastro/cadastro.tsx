@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { reqCadastro } from "@/hooks/reqLogin/reqCadastro";
 
 export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("ALUNO");
+  const [role, setRole] = useState("STUDENT");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -19,21 +20,12 @@ export default function Cadastro() {
     e.preventDefault();
     setError("");
     setSuccess("");
-    try {
-      const response = await fetch("http://localhost:3001/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password, role }),
-      });
-      if (response.ok) {
-        setSuccess("Cadastro realizado com sucesso!");
-        setEmail(""); setName(""); setPassword(""); setRole("ALUNO");
-      } else {
-        const data = await response.json();
-        setError(data?.message || "Erro ao cadastrar");
-      }
-    } catch (err: any) {
-      setError("Erro ao cadastrar");
+    const res = await reqCadastro(name, email, password, role as "STUDENT" | "PROFESSOR");
+    if (res.token) {
+      setSuccess("Cadastro realizado com sucesso!");
+      setEmail(""); setName(""); setPassword(""); setRole("STUDENT");
+    } else {
+      setError(res.error || "Erro ao cadastrar");
     }
   };
 
@@ -64,7 +56,7 @@ export default function Cadastro() {
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALUNO">Aluno</SelectItem>
+                  <SelectItem value="STUDENT">Aluno</SelectItem>
                   <SelectItem value="PROFESSOR">Professor</SelectItem>
                 </SelectContent>
               </Select>
