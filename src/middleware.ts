@@ -41,6 +41,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/student", request.url));
   }
 
+  // Impede que professor acesse /student
+  if (role === "PROFESSOR" && request.nextUrl.pathname.startsWith("/student")) {
+    return NextResponse.redirect(new URL("/professor", request.url));
+  }
+
   // Se houver token e permissão, permite acesso
   return NextResponse.next();
 }

@@ -29,16 +29,33 @@ export function LoginForm({
     const res = await reqLogin(email, password, role);
     console.log(res);
     const userRole = res.user?.role;
+    const userId = res.user?.id;
+    const userName = res.user?.name;
     if (res.access_token && userRole) {
-      await fetch("/api/set-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: res.access_token, role: userRole }),
-      });
-      if (userRole === "PROFESSOR") {
-        router.push("/professor");
-      } else if (userRole === "STUDENT") {
-        router.push("/student");
+      try {
+        // Define cookie chamando a rota criada anteriormente
+        const cookieResponse = await fetch("/api/set-cookie", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: res.access_token,
+            role: userRole,
+            id: userId,
+            name: userName,
+          }),
+        });
+
+        if (!cookieResponse.ok) {
+          throw new Error("Erro ao definir o cookie");
+        }
+        if (userRole === "PROFESSOR") {
+          router.push("/professor");
+        } else if (userRole === "STUDENT") {
+          router.push("/student");
+        }
+      } catch (err) {
+        setError("Erro ao definir sessão");
+        console.error(err);
       }
     } else {
       setError(res.error || "Erro ao fazer login");
