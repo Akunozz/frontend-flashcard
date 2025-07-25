@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/professor/sidebar/app-sidebar";
 import Header from "@/components/Header/Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 

@@ -19,22 +19,24 @@ function parseJwt(token: string) {
 }
 
 export function middleware(request: NextRequest) {
-  // Permitir acesso livre à página de login e cadastro
-  if (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/cadastro")) {
-    return NextResponse.next();
+  const token = request.cookies.get("token")?.value || "";
+  const payload = token ? parseJwt(token) : null;
+  const role = payload?.role;
+
+  // Se estiver acessando /login ou /cadastro e já tiver token e role, redireciona para a página correta
+  if ((request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/cadastro")) && token && role) {
+    if (role === "STUDENT") {
+      return NextResponse.redirect(new URL("/student", request.url));
+    }
+    if (role === "PROFESSOR") {
+      return NextResponse.redirect(new URL("/professor", request.url));
+    }
   }
 
-  // Verifica se o token está presente no cookie
-  const token = request.cookies.get("token")?.value || "";
-
-  // Se não houver token, redireciona para /login
-  if (!token) {
+  // Se não houver token, redireciona para /login (exceto se já estiver em /login ou /cadastro)
+  if (!token && !(request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/cadastro"))) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-
-  // Decodifica o token para pegar o role
-  const payload = parseJwt(token);
-  const role = payload?.role;
 
   // Impede que student acesse /professor
   if (role === "STUDENT" && request.nextUrl.pathname.startsWith("/professor")) {

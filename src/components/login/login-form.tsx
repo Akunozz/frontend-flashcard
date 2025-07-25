@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,11 +22,13 @@ export function LoginForm({
   const [password, setPassword] = useState<ILogin["password"]>("");
   const [role, setRole] = useState<ILogin["role"]>("STUDENT");
   const [error, setError] = useState("");
+  const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsPending(true);
     const res = await reqLogin(email, password, role);
     console.log(res);
     const userRole = res.user?.role;
@@ -60,6 +63,7 @@ export function LoginForm({
     } else {
       setError(res.error || "Erro ao fazer login");
     }
+    setIsPending(false);
   };
 
   return (
@@ -105,8 +109,14 @@ export function LoginForm({
                     />
                   </div>
                   {error && <div className="text-red-500 text-sm">{error}</div>}
-                  <Button type="submit" className="w-full">
-                    Login como Aluno
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="animate-spin size-4" /> Entrando...
+                      </span>
+                    ) : (
+                      "Login como Aluno"
+                    )}
                   </Button>
                 </div>
                 <div className="text-center text-sm mt-4">
@@ -159,8 +169,14 @@ export function LoginForm({
                     />
                   </div>
                   {error && <div className="text-red-500 text-sm">{error}</div>}
-                  <Button type="submit" className="w-full">
-                    Login como Professor
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="animate-spin size-4" /> Entrando...
+                      </span>
+                    ) : (
+                      "Login como Professor"
+                    )}
                   </Button>
                 </div>
                 <div className="text-center text-sm mt-4">
