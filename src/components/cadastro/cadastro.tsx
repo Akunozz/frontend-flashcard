@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { reqCadastro } from "@/hooks/reqLogin/reqCadastro";
+import { reqCadastro } from "@/hooks/login/reqCadastro";
 
 export default function Cadastro() {
   const [email, setEmail] = useState("");
@@ -16,18 +16,26 @@ export default function Cadastro() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    const res = await reqCadastro(name, email, password, role as "STUDENT" | "PROFESSOR");
-    if (res.token) {
-      setSuccess("Cadastro realizado com sucesso!");
-      setEmail(""); setName(""); setPassword(""); setRole("STUDENT");
-    } else {
-      setError(res.error || "Erro ao cadastrar");
-    }
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
+  const res = await reqCadastro(
+    name,
+    email,
+    password,
+    role as "STUDENT" | "PROFESSOR"
+  );
+  if (res.message) {
+    setSuccess(res.message);
+    setEmail("");
+    setName("");
+    setPassword("");
+    setRole("STUDENT");
+  } else {
+    setError(res.error || "Erro ao cadastrar");
+  }
+};
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-6 mx-auto mt-10">

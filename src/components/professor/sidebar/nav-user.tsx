@@ -26,7 +26,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 export function NavUser({
@@ -39,15 +38,36 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const router = useRouter();
-  const logout = () => {
-    // Limpa cookies usando js-cookie
-    Cookies.remove("name");
-    Cookies.remove("email");
-    Cookies.remove("token");
-    Cookies.remove("role");
-    // Redireciona para login
-    router.push("/login");
+  const logout = async () => {
+    try {
+      // Faz uma requisição POST para a rota de logout
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      
+      if (response.redirected) {
+        // Se a resposta foi redirecionada, segue o redirecionamento
+        window.location.href = response.url;
+      } else {
+        // Fallback: remove cookies manualmente e redireciona
+        Cookies.remove("name", { path: "/" });
+        Cookies.remove("email", { path: "/" });
+        Cookies.remove("token", { path: "/" });
+        Cookies.remove("role", { path: "/" });
+        Cookies.remove("id", { path: "/" });
+        window.location.replace("/login");
+      }
+    } catch (error) {
+      console.error("Erro durante logout:", error);
+      // Fallback: remove cookies manualmente e redireciona
+      Cookies.remove("name", { path: "/" });
+      Cookies.remove("email", { path: "/" });
+      Cookies.remove("token", { path: "/" });
+      Cookies.remove("role", { path: "/" });
+      Cookies.remove("id", { path: "/" });
+      window.location.replace("/login");
+    }
   }
 
   return (

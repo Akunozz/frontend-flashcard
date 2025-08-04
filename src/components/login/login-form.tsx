@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { reqLogin } from "@/hooks/reqLogin/reqLogin";
+import { reqLogin } from "@/hooks/login/reqLogin";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
