@@ -18,6 +18,22 @@ export async function reqListarTurmasProfessor(professorId: string): Promise<ITu
   }
 }
 
+export async function reqListarTurmasAluno(studentId: string): Promise<ITurma[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/turmas/aluno/${studentId}`);
+    const json = await response.json();
+    if (response.ok && Array.isArray(json)) {
+      return json as ITurma[];
+    } else if (response.ok && Array.isArray(json.turmas)) {
+      return json.turmas as ITurma[];
+    } else {
+      throw new Error(json.error || "Erro ao buscar turmas");
+    }
+  } catch (error: any) {
+    throw new Error(error?.message || "Erro de conexão");
+  }
+}
+
 export async function reqCriarTurma(data: ITurmaCreate): Promise<ITurma> {
   try {
     const response = await fetch(`${API_BASE_URL}/turmas`, {
@@ -44,6 +60,22 @@ export async function deleteTurma(id: number): Promise<void> {
     if (!response.ok) {
       const json = await response.json();
       throw new Error(json.error || "Erro ao deletar turma");
+    }
+  } catch (error: any) {
+    throw new Error(error?.message || "Erro de conexão");
+  }
+}
+
+export async function addAluno(token: string, studentId: string): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/turmas/aluno`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, studentId }),
+    });
+    if (!response.ok) {
+      const json = await response.json();
+      throw new Error(json.error || "Erro ao adicionar aluno");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");

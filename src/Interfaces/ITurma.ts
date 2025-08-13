@@ -1,4 +1,3 @@
-
 export interface IProfessor {
   id: string;
   name: string;
