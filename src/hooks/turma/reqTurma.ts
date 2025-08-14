@@ -1,4 +1,4 @@
-import { ITurmaCreate, ITurma } from "@/Interfaces/ITurma";
+import { ITurmaCreate, ITurma, ITurmaAluno } from "@/Interfaces/ITurma";
 import { API_BASE_URL } from "@/lib/api";
 
 
@@ -18,14 +18,14 @@ export async function reqListarTurmasProfessor(professorId: string): Promise<ITu
   }
 }
 
-export async function reqListarTurmasAluno(studentId: string): Promise<ITurma[]> {
+export async function reqListarTurmasAluno(studentId: string): Promise<ITurmaAluno[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/turmas/aluno/${studentId}`);
+    const response = await fetch(`${API_BASE_URL}/turmas/student/${studentId}`);
     const json = await response.json();
     if (response.ok && Array.isArray(json)) {
-      return json as ITurma[];
+      return json as ITurmaAluno[];
     } else if (response.ok && Array.isArray(json.turmas)) {
-      return json.turmas as ITurma[];
+      return json.turmas as ITurmaAluno[];
     } else {
       throw new Error(json.error || "Erro ao buscar turmas");
     }

@@ -30,7 +30,6 @@ export function LoginForm({
     setError("");
     setIsPending(true);
     const res = await reqLogin(email, password, role);
-    console.log(res);
     const userRole = res.user?.role;
     const userId = res.user?.id;
     const userName = res.user?.name;
@@ -44,6 +43,7 @@ export function LoginForm({
             role: userRole,
             id: userId,
             name: userName,
+            email: email,
           }),
         });
 

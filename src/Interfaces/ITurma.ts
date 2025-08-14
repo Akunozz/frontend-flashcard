@@ -8,6 +8,14 @@ export interface IProfessor {
   updatedAt: string;
 }
 
+export interface ITurmaAluno {
+  id: number;
+  turmaId: number;
+  studentId: string;
+  joinedAt: string;
+  turma: ITurma;
+}
+
 export interface ITurma {
   id: number;
   title: string;

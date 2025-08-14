@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { token, role, id, name } = await req.json();
+  const { token, role, id, name, email } = await req.json();
 
   const response = NextResponse.json({
     message: "Cookie definido com sucesso",
@@ -34,14 +34,18 @@ export async function POST(req: NextRequest) {
   });
 
   response.cookies.set("name", name, {
-    httpOnly: true,
     secure: true,
     sameSite: "strict",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
 
-
+  response.cookies.set("email", email, {
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
 
   return response;
 }
