@@ -19,7 +19,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "FlashCards - Aprenda de Forma Inteligente",
+  title: "Frota Certa Checklist", //FlashCards - Aprenda de Forma Inteligente
   description: "Sistema de flashcards para estudantes",
 };
 

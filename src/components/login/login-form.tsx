@@ -66,18 +66,18 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
+    <div className={cn("flex flex-col gap-2 sm:gap-8", className)} {...props}>
       {/* Header with branding */}
       <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-          <BookOpen className="w-8 h-8 text-white" />
+        <div className="mx-auto w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-md sm:rounded-2xl flex items-center justify-center shadow-lg">
+          <BookOpen className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-black text-foreground font-serif">
+          <h1 className="text-lg sm:text-3xl font-black text-foreground font-serif">
             FlashCards
           </h1>
-          <p className="text-muted-foreground text-lg font-medium">
-            Aprenda de Forma Inteligente
+          <p className="text-muted-foreground text-sm sm:text-lg font-medium">
+            Aprenda de Forma Divertida
           </p>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function LoginForm({
         onValueChange={(v) => setRole(v === "aluno" ? "STUDENT" : "PROFESSOR")}
         className="w-full"
       >
-        <TabsList className="mb-6 w-full grid grid-cols-2 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
+        <TabsList className="mb-2 sm:mb-6 w-full grid grid-cols-2 h-9 sm:h-12 bg-slate-100 dark:bg-slate-800 rounded-xl sm:p-1">
           <TabsTrigger
             value="aluno"
             className="flex items-center gap-2 rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -105,20 +105,24 @@ export function LoginForm({
         </TabsList>
 
         <TabsContent value="aluno" className="mt-0">
-          <Card className="overflow-hidden border-0 shadow-xl bg-zinc-100 dark:bg-white backdrop-blur-sm">
-            <CardContent className="p-0">
-              <div className="gradient-bg p-6 text-center">
-                <h2 className="text-2xl font-bold text-white font-serif">
-                  Bem-vindo, Estudante!
-                </h2>
-                <p className="text-emerald-100 font-medium">
-                  Desbloqueie seu conhecimento com flashcards envolventes
-                </p>
-              </div>
+          <Card
+            className="overflow-hidden border-0 shadow-xl 
+          bg-gradient-to-b from-white via-green-50 to-green-100
+          dark:from-green-200 dark:via-green-100 dark:to-green-200"
+          >
+            <div className="gradient-bg text-center p-4 rounded-2xl">
+              <h2 className="text-2xl font-bold text-white font-serif">
+                Bem-vindo, Estudante!
+              </h2>
+              <p className="text-emerald-100 font-medium">
+                Desbloqueie seu conhecimento com flashcards
+              </p>
+            </div>
 
-              <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+            <CardContent className="p-0">
+              <form className="px-6 space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label
                       htmlFor="email"
                       className="text-sm font-semibold text-slate-700"
@@ -132,10 +136,11 @@ export function LoginForm({
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors"
+                      className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label
                       htmlFor="password"
                       className="text-sm font-semibold text-slate-700"
@@ -149,7 +154,8 @@ export function LoginForm({
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-12 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors"
+                      className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -192,20 +198,23 @@ export function LoginForm({
         </TabsContent>
 
         <TabsContent value="professor" className="mt-0">
-          <Card className="overflow-hidden border-0 shadow-xl bg-zinc-100 dark:bg-white backdrop-blur-sm">
+          <Card
+            className="overflow-hidden border-0 shadow-xl 
+          bg-gradient-to-b from-white via-green-50 to-green-100
+          dark:from-green-200 dark:via-green-100 dark:to-green-200"
+          >
+            <div className="gradient-bg text-center p-4 rounded-2xl">
+              <h2 className="text-2xl font-bold text-white font-serif">
+                Bem-vindo, Professor!
+              </h2>
+              <p className="text-emerald-100 font-medium">
+                Crie e gerencie flashcards para seus alunos
+              </p>
+            </div>
             <CardContent className="p-0">
-              <div className="gradient-bg p-6 text-center">
-                <h2 className="text-2xl font-bold text-white font-serif">
-                  Bem-vindo, Professor!
-                </h2>
-                <p className="text-emerald-100 font-medium">
-                  Crie e gerencie flashcards para seus alunos
-                </p>
-              </div>
-
-              <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+              <form className="px-6 space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label
                       htmlFor="email"
                       className="text-sm font-semibold text-slate-700"
@@ -219,10 +228,11 @@ export function LoginForm({
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors"
+                      className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label
                       htmlFor="password"
                       className="text-sm font-semibold text-slate-700"
@@ -236,7 +246,8 @@ export function LoginForm({
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-12 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors"
+                      className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -278,24 +289,6 @@ export function LoginForm({
           </Card>
         </TabsContent>
       </Tabs>
-
-      <div className="text-center text-xs text-slate-500 space-y-1">
-        <p>Ao continuar, você concorda com nossos</p>
-        <div className="space-x-4">
-          <a
-            href="#"
-            className="underline hover:text-emerald-600 transition-colors"
-          >
-            Termos de Serviço
-          </a>
-          <a
-            href="#"
-            className="underline hover:text-emerald-600 transition-colors"
-          >
-            Política de Privacidade
-          </a>
-        </div>
-      </div>
     </div>
   );
 }

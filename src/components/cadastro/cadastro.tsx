@@ -22,8 +22,12 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function Cadastro() {
+export default function Cadastro({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -53,38 +57,40 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="text-center space-y-6 mb-10">
-        <div className="mx-auto w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-center justify-center shadow-xl bounce-in">
-          <UserPlus className="w-10 h-10 text-white" />
+    <div className={cn("flex flex-col gap-2 sm:gap-8", className)} {...props}>
+      {/* Header with branding */}
+      <div className="text-center space-y-4">
+        <div className="mx-auto w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-md sm:rounded-2xl flex items-center justify-center shadow-lg">
+          <UserPlus className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h1 className="text-4xl font-black text-foreground font-serif mb-2">
+          <h1 className="text-lg sm:text-3xl font-black text-foreground font-serif">
             Criar Conta
           </h1>
-          <p className="text-muted-foreground text-xl font-medium">
-            Junte-se à comunidade
-          </p>
-          <p className="text-sm text-slate-500 mt-2">
+          <p className="text-sm text-slate-500">
             Preencha os dados para começar
           </p>
         </div>
       </div>
 
-      <Card className="overflow-hidden border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-8">
-          <h2 className="text-2xl font-bold text-white font-serif mb-2">
+      <Card
+        className="overflow-hidden border-0 shadow-xl 
+                bg-gradient-to-b from-white via-green-50 to-green-100
+                dark:from-green-200 dark:via-green-100 dark:to-green-200"
+      >
+        <div className="gradient-bg text-center p-4 rounded-2xl">
+          <h2 className="text-2xl font-bold text-white font-serif">
             Comece sua Jornada
           </h2>
           <p className="text-emerald-100 font-medium">
             Todos os campos são obrigatórios
           </p>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-5">
-              <div className="space-y-3">
+        <CardContent className="p-0">
+          <form className="px-6 space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div className="space-y-1">
                 <Label
                   htmlFor="name"
                   className="text-base font-semibold text-slate-700"
@@ -98,7 +104,8 @@ export default function Cadastro() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="h-14 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors text-base"
+                  className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                 />
               </div>
 
@@ -116,7 +123,8 @@ export default function Cadastro() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-14 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors text-base"
+                  className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                 />
               </div>
 
@@ -130,12 +138,13 @@ export default function Cadastro() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="*******"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="h-14 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors text-base"
+                  className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                 />
               </div>
 
@@ -149,7 +158,8 @@ export default function Cadastro() {
                 <Select value={role} onValueChange={setRole}>
                   <SelectTrigger
                     id="role"
-                    className="h-14 border-2 border-slate-200 focus:border-emerald-400 rounded-xl transition-colors text-base"
+                    className="h-12 border-2 border-green-300 dark:border-green-900 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                   >
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
