@@ -17,14 +17,6 @@ export async function POST(req: NextRequest) {
     maxAge: 60 * 60 * 24 * 7, // 1 semana
   });
 
-  response.cookies.set("role", role, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-
   response.cookies.set("id", id, {
     httpOnly: true,
     secure: true,
@@ -32,7 +24,15 @@ export async function POST(req: NextRequest) {
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
-
+  
+  response.cookies.set("role", role, {
+    //httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  
   response.cookies.set("name", name, {
     secure: true,
     sameSite: "strict",

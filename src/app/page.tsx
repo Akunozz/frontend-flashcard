@@ -1,15 +1,12 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
-import { Check, ChevronRight, ArrowRight, Star, Zap, Shield, Users, BarChart, Layers } from "lucide-react"
+import { ChevronRight, ArrowRight, Star, Zap, Shield, Users, BarChart, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function Home() {

@@ -81,3 +81,19 @@ export async function addAluno(token: string, studentId: string): Promise<void> 
     throw new Error(error?.message || "Erro de conexão");
   }
 }
+
+export default async function reqTurmaById(id: string): Promise<ITurma> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/turmas/${id}`);
+    const json = await response.json();
+    if (response.ok && json.turma) {
+      return json.turma as ITurma;
+    } else if (response.ok) {
+      return json as ITurma;
+    } else {
+      throw new Error(json.error || "Erro ao buscar turma");
+    }
+  } catch (error: any) {
+    throw new Error(error?.message || "Erro de conexão");
+  }
+}

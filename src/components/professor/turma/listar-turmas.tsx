@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { reqListarTurmasProfessor, deleteTurma } from "@/hooks/turma/reqTurma";
 import type { ITurma } from "@/Interfaces/ITurma";
 import { Button } from "@/components/ui/button";
@@ -16,23 +22,38 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface ListarTurmasProps {
   professorId: string;
+  latestOnly?: boolean;
 }
 
-export default function ListarTurmas({ professorId }: ListarTurmasProps) {
+export default function ListarTurmas({
+  professorId,
+  latestOnly = false,
+}: ListarTurmasProps) {
   const [turmas, setTurmas] = useState<ITurma[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const router = useRouter();
 
   const fetchTurmas = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const res = await reqListarTurmasProfessor(professorId);
-      setTurmas(res);
+      let turmasFiltradas = res;
+      if (latestOnly) {
+        turmasFiltradas = [...res]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .slice(0, 5);
+      }
+      setTurmas(turmasFiltradas);
     } catch {
       setError("Erro ao buscar turmas.");
     }
@@ -68,7 +89,7 @@ export default function ListarTurmas({ professorId }: ListarTurmasProps) {
       {turmas.map((turma) => (
         <Card key={turma.id}>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex items-center justify-between gap-6">
               <span>{turma.title}</span>
               <Dialog>
                 <DialogTrigger>
@@ -118,6 +139,18 @@ export default function ListarTurmas({ professorId }: ListarTurmasProps) {
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <div className="flex justify-center w-full">
+              <Button
+                variant="outline"
+                className="bg-primary text-white dark:bg-primary dark:text-white"
+                size="sm"
+                onClick={() => router.push(`/professor/turmas/${turma.id}`)}
+              >
+                Visualizar Turma
+              </Button>
+            </div>
+          </CardFooter>
         </Card>
       ))}
     </div>

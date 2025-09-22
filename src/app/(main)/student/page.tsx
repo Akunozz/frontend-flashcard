@@ -8,7 +8,6 @@ export default async function StudentPage() {
   return (
     <div>
       <h1>Página do Estudante</h1>
-
       <div>
         <EntrarTurma studentId={sutendtId ?? ""} />
         <ListarTurmasAluno studentId={sutendtId ?? ""} />
