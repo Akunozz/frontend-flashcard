@@ -47,16 +47,13 @@ export default function CriarTurmaDialog({
     register,
     handleSubmit,
     reset,
-    setError,
-    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<TurmaValues>({
     resolver: zodResolver(turmaSchema),
-    defaultValues: { title: "", description: "" }
+    defaultValues: { title: "", description: "" },
   });
 
   const onSubmit = async (data: TurmaValues) => {
-    clearErrors("root");
     try {
       const turma = await reqCriarTurma({
         title: data.title,
@@ -66,16 +63,16 @@ export default function CriarTurmaDialog({
 
       if (turma?.id) {
         toast.success("Turma criada com sucesso!");
-        window.dispatchEvent(new CustomEvent("turmaCreated"));
+        window.dispatchEvent(new Event("turmaCreated"));
         reset();
         setTimeout(() => setOpen(false), 500);
       } else {
-        setError("root", { message: "Erro ao criar turma." });
+        toast.error("Erro ao criar turma.");
       }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Erro ao criar turma.";
-      setError("root", { message });
+      toast.error(message);
     }
   };
 
@@ -85,7 +82,7 @@ export default function CriarTurmaDialog({
         <Button variant="default">
           <PlusCircle className="w-4 h-4 mr-2" />
           Criar Turma
-          </Button>
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
@@ -141,7 +138,13 @@ export default function CriarTurmaDialog({
             aria-busy={isSubmitting}
             className="text-white"
           >
-            {isSubmitting ? <span className="flex items-center gap-2"><Loader2 className="animate-spin"/> Criando...</span> : "Criar"}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="animate-spin" /> Criando...
+              </span>
+            ) : (
+              "Criar"
+            )}
           </Button>
         </form>
       </DialogContent>

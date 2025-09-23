@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { reqListarTurmasProfessor, deleteTurma } from "@/hooks/turma/reqTurma";
-import type { ITurma } from "@/Interfaces/ITurma";
+import { reqGetDecksByTurmaId, reqDeleteDeck } from "@/hooks/decks/reqDeck";
+import type { IDeck } from "@/Interfaces/IDeck";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen,
@@ -36,89 +36,61 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 
-interface ListarTurmasProps {
-  professorId: string;
-  latestOnly?: boolean;
-  horizontal?: boolean;
+interface ListarDeckProps {
+  turmaId: number;
 }
 
-export default function ListarTurmas({
-  professorId,
-  latestOnly = false,
-  horizontal = false,
-}: ListarTurmasProps) {
-  const [turmas, setTurmas] = useState<ITurma[]>([]);
+export default function ListarDeck({ turmaId }: ListarDeckProps) {
+  const [decks, setDecks] = useState<IDeck[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const router = useRouter();
 
-  const fetchTurmas = useCallback(async () => {
+  const fetchDecks = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await reqListarTurmasProfessor(professorId);
-      let turmasFiltradas = res;
-      if (latestOnly) {
-        turmasFiltradas = [...res]
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .slice(0, 5);
-      }
-      setTurmas(turmasFiltradas);
+      const res = await reqGetDecksByTurmaId(turmaId);
+      setDecks(res);
     } catch {
-      setError("Erro ao buscar turmas.");
+      setError("Erro ao buscar decks.");
     }
     setLoading(false);
-  }, [professorId]);
+  }, [turmaId]);
 
   useEffect(() => {
-    fetchTurmas();
-    const handler = () => fetchTurmas();
-    window.addEventListener("turmaCreated", handler);
-    return () => window.removeEventListener("turmaCreated", handler);
-  }, [fetchTurmas]);
+    fetchDecks();
+    const handler = () => fetchDecks();
+    window.addEventListener("deckCreated", handler);
+    return () => window.removeEventListener("deckCreated", handler);
+  }, [fetchDecks]);
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
     setError("");
     try {
-      await deleteTurma(id);
-      setTurmas((prev) => prev.filter((t) => t.id !== id));
+      await reqDeleteDeck(id);
+      setDecks((prev) => prev.filter((d) => d.id !== id));
     } catch {
-      setError("Erro ao deletar turma.");
+      setError("Erro ao deletar deck.");
     } finally {
       setDeletingId(null);
     }
   };
 
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    toast(`Código ${code} copiado!`);
-  };
-
   if (loading) return <Loader />;
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!turmas.length) return <div>Nenhuma turma encontrada.</div>;
+  if (!decks.length) return <div>Nenhum deck encontrado.</div>;
 
   return (
-    <div
-      className={
-        horizontal
-          ? "flex gap-4 overflow-x-auto flex-nowrap md:grid md:grid-cols-2 py-2"
-          : "grid gap-4 md:grid-cols-2"
-      }
-    >
-      {turmas.map((turma) => (
-        <Card key={turma.id}>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {decks.map((deck) => (
+        <Card key={deck.id}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-6">
-              <span>{turma.title}</span>
+              <span>{deck.title}</span>
               <Popover>
                 <PopoverTrigger>
                   <div>
@@ -137,7 +109,7 @@ export default function ListarTurmas({
                       <DialogHeader>
                         <DialogTitle>Você tem certeza?</DialogTitle>
                         <DialogDescription>
-                          Isso excluirá permanentemente a turma e todos os dados
+                          Isso excluirá permanentemente o deck e todos os dados
                           serão perdidos.
                         </DialogDescription>
                       </DialogHeader>
@@ -150,13 +122,13 @@ export default function ListarTurmas({
                         </DialogClose>
                         <Button
                           variant="destructive"
-                          onClick={() => handleDelete(turma.id)}
-                          disabled={deletingId === turma.id}
+                          onClick={() => handleDelete(deck.id)}
+                          disabled={deletingId === deck.id}
                         >
                           <Trash2 className="h-4 w-4" />
-                          {deletingId === turma.id
+                          {deletingId === deck.id
                             ? "Deletando..."
-                            : "Deletar Turma"}
+                            : "Deletar Deck"}
                         </Button>
                       </div>
                     </DialogContent>
@@ -164,43 +136,15 @@ export default function ListarTurmas({
                 </PopoverContent>
               </Popover>
             </CardTitle>
-            <div
-              className={
-                horizontal
-                  ? "text-sm text-muted-foreground mb-2 truncate"
-                  : "text-sm text-muted-foreground mb-2"
-              }
-            >
-              {turma.description || "Sem descrição"}
+            <div className="text-sm text-muted-foreground mb-2">
+              {deck.description || "Sem descrição"}
             </div>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="font-mono">
-                {turma.token}
-              </Badge>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => copyCode(turma.token)}
-                className="h-6 w-6"
-              >
-                <Copy className="w-3 h-3" />
-              </Button>
-            </div>
             <div className="flex gap-8">
               <div className="text-xs text-gray-500 mt-1 items-center">
-                <User className="h-4 w-4 inline-block mr-1" />
-                ?? alunos
-              </div>
-              <div className="text-xs text-gray-500 mt-1 items-center">
                 <BookOpen className="h-4 w-4 inline-block mr-1" />
-                ?? decks
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              <div className="text-xs text-gray-500 mt-1">
-                Criada em: {new Date(turma.createdAt).toLocaleDateString()}
+                {deck.cards?.length ?? 0} cards
               </div>
             </div>
           </CardContent>
@@ -210,9 +154,9 @@ export default function ListarTurmas({
                 variant="outline"
                 className="bg-primary text-white dark:bg-primary dark:text-white"
                 size="sm"
-                onClick={() => router.push(`/professor/turmas/${turma.id}`)}
+                onClick={() => router.push(`/professor/decks/${deck.id}`)}
               >
-                Visualizar Turma
+                Visualizar Deck
               </Button>
             </div>
           </CardFooter>

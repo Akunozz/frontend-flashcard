@@ -3,9 +3,21 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import reqTurmaById from "@/hooks/turma/reqTurma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loader from "@/components/loading/loader";
 import type { ITurma } from "@/Interfaces/ITurma";
+import CriarDeck from "@/components/Deck/criar-deck";
+import { ChevronLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import ListarDeck from "@/components/Deck/listar-decks";
 
 export default function TurmaDetalhePage() {
   const params = useParams();
@@ -30,24 +42,31 @@ export default function TurmaDetalhePage() {
   if (!turma) return <div>Turma não encontrada.</div>;
 
   return (
-    <main className="flex justify-center items-center">
-      <Card className="w-full max-w-xl">
-        <CardHeader>
-          <CardTitle>{turma.title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-2">
-            <span className="font-semibold">Descrição:</span> {turma.description || "Sem descrição"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Código de acesso:</span> <span className="italic">{turma.token}</span>
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Criada em:</span> {new Date(turma.createdAt).toLocaleDateString()}
-          </div>
-          {/* Adicione mais detalhes conforme necessário */}
-        </CardContent>
-      </Card>
-    </main>
+    <div>
+      <header className="flex items-center mb-4 gap-2">
+        <ChevronLeft className="" onClick={() => window.history.back()} />
+        <div className="flex flex-col">
+          <h1 className="font-semibold">{turma.title}</h1>
+          <span className="text-gray-500 text-sm">
+            {turma.description || "Sem descrição"}
+          </span>
+        </div>
+      </header>
+
+      <Separator />
+
+      <div className="mt-4 flex justify-between items-center">
+        <div>
+          <h1 className="font-semibold">Decks</h1>
+        </div>
+        <div>
+          <CriarDeck turmaId={turma.id} />
+        </div>
+      </div>
+
+      <div>
+        <ListarDeck turmaId={turma.id} />
+      </div>
+    </div>
   );
 }
