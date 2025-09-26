@@ -12,11 +12,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 // ----------------- Schema (Zod) -----------------
 const loginSchema = z.object({
-  email: z
-    .email("E-mail inválido."),
+  email: z.email("E-mail inválido."),
   password: z
     .string()
     .nonempty("Informe a senha.")
@@ -79,7 +79,8 @@ export function LoginForm() {
         if (userRole === "PROFESSOR") {
           toast.success("Login realizado com sucesso!");
           router.push("/professor");
-        } else if (userRole === "STUDENT") {
+        }
+        if (userRole === "STUDENT") {
           toast.success("Login realizado com sucesso!");
           router.push("/student");
         }
@@ -88,7 +89,13 @@ export function LoginForm() {
         setError("root", { message: "Erro ao definir sessão." });
       }
     } else {
-      setError("root", { message: res.error || "Erro ao fazer login." });
+      if (res && typeof res.message === "string") {
+        setError("root", { message: res.message });
+        toast.error(res.message);
+      } else {
+        setError("root", { message: "Erro ao fazer login." });
+        toast.error("Erro ao fazer login.");
+      }
     }
   };
 

@@ -26,6 +26,8 @@ export interface ITurma {
   updatedAt: string;
   professor?: IProfessor;
   turmaAluno?: any[];
+  alunosCount?: number;
+  decksCount?: number;
 }
 
 export interface ITurmaCreate {

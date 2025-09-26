@@ -5,19 +5,10 @@ import { useParams } from "next/navigation";
 import reqTurmaById from "@/hooks/turma/reqTurma";
 import Loader from "@/components/loading/loader";
 import type { ITurma } from "@/Interfaces/ITurma";
-import CriarDeck from "@/components/Deck/criar-deck";
+import CriarDeck from "@/components/Decks/criar-deck";
 import { ChevronLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { DialogHeader } from "@/components/ui/dialog";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import ListarDeck from "@/components/Deck/listar-decks";
+import ListarDeck from "@/components/Decks/listar-decks";
 
 export default function TurmaDetalhePage() {
   const params = useParams();
@@ -64,7 +55,7 @@ export default function TurmaDetalhePage() {
         </div>
       </div>
 
-      <div>
+      <div className="mt-6">
         <ListarDeck turmaId={turma.id} />
       </div>
     </div>

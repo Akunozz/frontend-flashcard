@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   Copy,
+  Eye,
   Pencil,
   Settings,
   Trash2,
@@ -115,7 +116,7 @@ export default function ListarTurmas({
       }
     >
       {turmas.map((turma) => (
-        <Card key={turma.id}>
+        <Card key={turma.id} className="min-w-[250px]">
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-6">
               <span>{turma.title}</span>
@@ -167,8 +168,8 @@ export default function ListarTurmas({
             <div
               className={
                 horizontal
-                  ? "text-sm text-muted-foreground mb-2 truncate"
-                  : "text-sm text-muted-foreground mb-2"
+                  ? "text-xs text-muted-foreground mb-2 truncate dark:text-zinc-400"
+                  : "text-xs text-muted-foreground mb-2 dark:text-zinc-400"
               }
             >
               {turma.description || "Sem descrição"}
@@ -176,7 +177,10 @@ export default function ListarTurmas({
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="font-mono">
+              <Badge
+                variant="secondary"
+                className="font-mono bg-primary text-white"
+              >
                 {turma.token}
               </Badge>
               <Button
@@ -188,18 +192,20 @@ export default function ListarTurmas({
                 <Copy className="w-3 h-3" />
               </Button>
             </div>
-            <div className="flex gap-8">
-              <div className="text-xs text-gray-500 mt-1 items-center">
-                <User className="h-4 w-4 inline-block mr-1" />
-                ?? alunos
+            <div className="flex justify-between">
+              <div className="flex text-xs text-gray-500 dark:text-white mt-1 items-center gap-1">
+                <User className="h-4 w-4" />
+                <span>{turma.alunosCount}</span>
+                {turma.alunosCount === 1 ? "aluno" : "alunos"}
               </div>
-              <div className="text-xs text-gray-500 mt-1 items-center">
-                <BookOpen className="h-4 w-4 inline-block mr-1" />
-                ?? decks
+              <div className="flex text-xs text-gray-500 dark:text-white mt-1 items-center gap-1">
+                <BookOpen className="h-4 w-4" />
+                <span>{turma.decksCount}</span>
+                {turma.decksCount === 1 ? <span> deck </span> : "decks"}
               </div>
             </div>
-            <div className="text-xs text-gray-500 mt-1">
-              <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-500 dark:text-white">
+              <div className="text-xs text-gray-500 mt-1 dark:text-white">
                 Criada em: {new Date(turma.createdAt).toLocaleDateString()}
               </div>
             </div>
@@ -212,6 +218,7 @@ export default function ListarTurmas({
                 size="sm"
                 onClick={() => router.push(`/professor/turmas/${turma.id}`)}
               >
+                <Eye className="mr-1"/>
                 Visualizar Turma
               </Button>
             </div>

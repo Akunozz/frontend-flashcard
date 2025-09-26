@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface CriarDeckProps {
   turmaId: number;
@@ -50,30 +51,38 @@ export default function CriarDeck({ turmaId }: CriarDeckProps) {
     defaultValues: { title: "", description: "", turmaId: turmaId },
   });
 
-  const onSubmit = async (data: DeckValues) => {
-    try {
-      const deck = await reqCreateDeck({
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: createDeck, isPending } = useMutation({
+    mutationFn: (data: DeckValues) =>
+      reqCreateDeck({
         title: data.title,
         description: data.description ?? "",
-        turmaId: turmaId,
-      });
+        turmaId: data.turmaId,
+      }),
+    onSuccess: async (deck) => {
       if (deck?.id) {
         toast.success("Deck criado com sucesso!");
-        window.dispatchEvent(new Event("deckCreated"));
+        await queryClient.invalidateQueries({ queryKey: ["decks", turmaId] });
         reset();
-        setTimeout(() => setOpen(false), 500);
+        setOpen(false);
       } else {
         toast.error("Erro ao criar deck.");
       }
-    } catch (error) {
+    },
+    onError: () => {
       toast.error("Erro ao criar deck.");
-    }
+    },
+  });
+
+  const onSubmit = async (data: DeckValues) => {
+    await createDeck(data);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Criar Deck</Button>
+        <Button><PlusCircle /> Criar Deck</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -123,11 +132,11 @@ export default function CriarDeck({ turmaId }: CriarDeckProps) {
 
           <Button
             type="submit"
-            disabled={isSubmitting}
-            aria-busy={isSubmitting}
+            disabled={isSubmitting || isPending}
+            aria-busy={isSubmitting || isPending}
             className="text-white flex justify-center w-full"
           >
-            {isSubmitting ? (
+            {isSubmitting || isPending ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="animate-spin" /> Criando...
               </span>
