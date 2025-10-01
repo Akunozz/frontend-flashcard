@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, PlusCircle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CriarTurmaDialogProps {
   professorId: string;
@@ -42,6 +43,7 @@ export default function CriarTurmaDialog({
   professorId,
 }: CriarTurmaDialogProps) {
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -63,7 +65,9 @@ export default function CriarTurmaDialog({
 
       if (turma?.id) {
         toast.success("Turma criada com sucesso!");
-        window.dispatchEvent(new Event("turmaCreated"));
+        await queryClient.invalidateQueries({
+          queryKey: ["turma", professorId],
+        });
         reset();
         setTimeout(() => setOpen(false), 500);
       } else {
@@ -79,7 +83,7 @@ export default function CriarTurmaDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">
+        <Button variant="default" className="text-white dark:bg-emerald-950">
           <PlusCircle className="w-4 h-4 mr-2" />
           Criar Turma
         </Button>

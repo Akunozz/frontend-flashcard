@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,19 +37,17 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
   const logout = async () => {
     try {
-      // Faz uma requisição POST para a rota de logout
       const response = await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
       });
-      
+
       if (response.redirected) {
-        // Se a resposta foi redirecionada, segue o redirecionamento
         window.location.href = response.url;
       } else {
-        // Fallback: remove cookies manualmente e redireciona
         Cookies.remove("name", { path: "/" });
         Cookies.remove("email", { path: "/" });
         Cookies.remove("token", { path: "/" });
@@ -59,7 +57,6 @@ export function NavUser({
       }
     } catch (error) {
       console.error("Erro durante logout:", error);
-      // Fallback: remove cookies manualmente e redireciona
       Cookies.remove("name", { path: "/" });
       Cookies.remove("email", { path: "/" });
       Cookies.remove("token", { path: "/" });
@@ -67,7 +64,16 @@ export function NavUser({
       Cookies.remove("id", { path: "/" });
       window.location.replace("/login");
     }
-  }
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <SidebarMenu>
@@ -76,59 +82,70 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-emerald-50 dark:hover:bg-emerald-900/50 transition-colors"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg border-2 border-emerald-200 dark:border-emerald-700">
+                <AvatarFallback className="rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white font-semibold">
+                  {getInitials(user.name)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {user.email}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <Avatar className="h-8 w-8 rounded-lg border-2 border-emerald-200 dark:border-emerald-700">
+                  <AvatarFallback className="rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white font-semibold">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
+              <DropdownMenuItem className="cursor-pointer">
+                <Sparkles className="text-yellow-500" />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem className="cursor-pointer">
+                <BadgeCheck className="text-emerald-500" />
+                Conta
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+              <DropdownMenuItem className="cursor-pointer">
+                <CreditCard className="text-blue-500" />
+                Pagamento
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem className="cursor-pointer">
+                <Bell className="text-purple-500" />
+                Notificações
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
+            <DropdownMenuItem
+              onClick={logout}
+              className="cursor-pointer text-red-600 focus:text-red-600"
+            >
               <LogOut />
               Sair
             </DropdownMenuItem>
@@ -138,4 +155,3 @@ export function NavUser({
     </SidebarMenu>
   );
 }
-

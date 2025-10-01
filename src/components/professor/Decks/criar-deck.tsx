@@ -8,9 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface CriarDeckProps {
@@ -82,7 +82,7 @@ export default function CriarDeck({ turmaId }: CriarDeckProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><PlusCircle /> Criar Deck</Button>
+        <Button className="text-white"><PlusCircle /> Criar Deck</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

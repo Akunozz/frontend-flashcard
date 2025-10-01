@@ -1,6 +1,63 @@
 import { ITurmaCreate, ITurma, ITurmaAluno } from "@/Interfaces/ITurma";
 import { API_BASE_URL } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+export function useListarTurmasProfessor(professorId: string) {
+  return useQuery<ITurma[]>({
+    queryKey: ["turma", professorId],
+    queryFn: () => reqListarTurmasProfessor(professorId),
+  });
+}
+export function useListarTurmasAluno(studentId: string) {
+  return useQuery<ITurmaAluno[]>({
+    queryKey: ["turmaAluno", studentId],
+    queryFn: () => reqListarTurmasAluno(studentId),
+  });
+}
+export function useCriarTurma() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: reqCriarTurma,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["turma", variables.professorId] });
+    },
+  });
+}
+export function useDeleteTurma(professorId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteTurma,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["turma", professorId] });
+    },
+  });
+}
+export function useAddAluno(studentId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ token }: { token: string }) => addAluno(token, studentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["turmaAluno", studentId] });
+    },
+  });
+}
+export function useTurmaById(id: string) {
+  return useQuery<ITurma>({
+    queryKey: ["turmaById", id],
+    queryFn: () => reqTurmaById(id),
+    enabled: !!id,
+  });
+}
+
+export function useUpdateTurma(professorId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: reqUpdateTurma,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["turma", professorId] });
+    },
+  });
+}
 
 export async function reqListarTurmasProfessor(professorId: string): Promise<ITurma[]> {
   try {
@@ -92,6 +149,25 @@ export default async function reqTurmaById(id: string): Promise<ITurma> {
       return json as ITurma;
     } else {
       throw new Error(json.error || "Erro ao buscar turma");
+    }
+  } catch (error: any) {
+    throw new Error(error?.message || "Erro de conexão");
+  }
+}
+
+// Função para atualizar turma
+export async function reqUpdateTurma(data: Partial<ITurma> & { id: number }): Promise<ITurma> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/turmas/${data.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const json = await response.json();
+    if (response.ok) {
+      return json.turma as ITurma;
+    } else {
+      throw new Error(json.error || "Erro ao atualizar turma");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");

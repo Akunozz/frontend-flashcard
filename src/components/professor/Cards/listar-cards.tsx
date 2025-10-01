@@ -38,7 +38,7 @@ import { toast } from "sonner";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import z from "zod";
 
 const cardSchema = z.object({
   front: z
@@ -135,7 +135,7 @@ export default function ListarCard({ deckId }: ListarCardProps) {
 
   const scrollToIndex = (idx: number) => {
     if (scrollContainerRef.current) {
-      const cardWidth = 288; // largura do card
+      const cardWidth = 288;
       scrollContainerRef.current.scrollTo({
         left: idx * cardWidth,
         behavior: "smooth",
@@ -173,26 +173,26 @@ export default function ListarCard({ deckId }: ListarCardProps) {
 
   if (error)
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-red-200 rounded-xl bg-red-50/50">
-        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3">
-          <Trash2 className="w-6 h-6 text-red-600" />
+      <div className="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-destructive/20 rounded-xl bg-destructive/5">
+        <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-3">
+          <Trash2 className="w-6 h-6 text-destructive" />
         </div>
-        <h3 className="text-lg font-semibold text-red-900 mb-1">
+        <h3 className="text-lg font-semibold text-destructive mb-1">
           Erro ao carregar
         </h3>
-        <p className="text-red-600 text-center text-sm">{error.message}</p>
+        <p className="text-destructive/80 text-center text-sm">
+          {error.message}
+        </p>
       </div>
     );
 
   if (!cards.length)
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4 border-2 border-dashed border-muted-foreground/20 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-4">
-          <FilePlus className="w-8 h-8 text-primary/70" />
+      <div className="flex flex-col items-center justify-center py-20 px-4 border-2 border-dashed border-border rounded-xl bg-gradient-to-br from-muted/30 to-muted/10">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4">
+          <FilePlus className="w-8 h-8 text-primary" />
         </div>
-        <h2 className="text-xl font-semibold mb-2 text-foreground">
-          Nenhuma carta criada
-        </h2>
+        <h2 className="text-xl font-semibold mb-2">Nenhuma carta criada</h2>
         <p className="text-muted-foreground text-center text-sm max-w-md leading-relaxed">
           Adicione flashcards para que os estudantes possam começar a estudar e
           praticar o conteúdo
@@ -202,21 +202,21 @@ export default function ListarCard({ deckId }: ListarCardProps) {
 
   return (
     <div className="relative">
-      {/* Navigation buttons */}
       <div className="flex justify-between items-center mb-6">
         <Button
           variant="outline"
           size="icon"
           onClick={scrollLeft}
-          className="rounded-full shadow-sm hover:shadow-xl transition-all duration-300 bg-background/80 backdrop-blur-sm border-2 border-primary"
+          disabled={currentIndex === 0}
+          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background to-secondary/50 backdrop-blur-sm border-2 hover:border-primary disabled:opacity-50"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5" />
         </Button>
 
         <div className="text-center">
-          <h3 className="font-semibold text-foreground">Cards</h3>
+          <h3 className="font-bold text-lg text-foreground">Flashcards</h3>
           <p className="text-sm text-muted-foreground">
-            {cards.length} cartas disponíveis
+            {cards.length} {cards.length === 1 ? "carta" : "cartas"} disponíveis
           </p>
         </div>
 
@@ -224,13 +224,13 @@ export default function ListarCard({ deckId }: ListarCardProps) {
           variant="outline"
           size="icon"
           onClick={scrollRight}
-          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-background/80 backdrop-blur-sm border-2 border-primary"
+          disabled={currentIndex === cards.length - 1}
+          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background to-secondary/50 backdrop-blur-sm border-2 hover:border-primary disabled:opacity-50"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         </Button>
       </div>
 
-      {/* Book-style horizontal scroll container */}
       <div
         ref={scrollContainerRef}
         className="flex gap-4 overflow-x-auto scrollbar-hide pb-6 px-4"
@@ -241,12 +241,9 @@ export default function ListarCard({ deckId }: ListarCardProps) {
             data-index={index}
             className="flex-shrink-0 relative w-72"
           >
-            {/* Card content with book page styling */}
-            <div className="w-full h-full bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl relative overflow-hidden">
-              
-              {/* Header with actions */}
+            <div className="w-full h-full bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-700 rounded-2xl relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between p-4">
-                <div className="text-xs text-amber-700 font-medium">
+                <div className="text-xs text-amber-700 dark:text-amber-300 font-medium">
                   Carta #{index + 1}
                 </div>
                 <div className="flex items-center gap-1">
@@ -254,7 +251,7 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                     size="icon"
                     variant="ghost"
                     onClick={() => handleEdit(card)}
-                    className="h-7 w-7 text-black"
+                    className="h-7 w-7 hover:bg-primary/10 hover:text-primary"
                   >
                     <Pencil className="w-3 h-3" />
                   </Button>
@@ -262,49 +259,45 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                     size="icon"
                     variant="ghost"
                     onClick={() => handleDeleteClick(card)}
-                    className="h-7 w-7 hover:bg-red-100 hover:text-red-600"
+                    className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
               </div>
 
-              {/* Card content */}
               <div className="px-6 pl-12 pb-6 space-y-6 h-full flex flex-col">
-                {/* Front side */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <span className="text-sm font-bold text-blue-700 uppercase tracking-wider">
+                    <span className="text-sm font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
                       Pergunta
                     </span>
                   </div>
-                  <div className="bg-white/70 rounded-xl p-4 border border-blue-200 shadow-sm">
+                  <div className="bg-white/70 dark:bg-white/10 rounded-xl p-4 border border-blue-200 dark:border-blue-700 shadow-sm">
                     <p className="text-foreground leading-relaxed text-sm font-medium">
                       {card.front}
                     </p>
                   </div>
                 </div>
 
-                {/* Back side */}
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="text-sm font-bold text-green-700 uppercase tracking-wider">
+                    <span className="text-sm font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">
                       Resposta
                     </span>
                   </div>
-                  <div className="bg-white/70 rounded-xl p-4 border border-green-200 shadow-sm flex-1">
+                  <div className="bg-white/70 dark:bg-white/10 rounded-xl p-4 border border-green-200 dark:border-green-700 shadow-sm flex-1">
                     <p className="text-foreground leading-relaxed text-sm">
                       {card.back}
                     </p>
                   </div>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center gap-2 pt-3 border-t border-amber-200/50">
-                  <Calendar className="w-3 h-3 text-amber-600" />
-                  <span className="text-xs text-amber-700">
+                <div className="flex items-center gap-2 pt-3 border-t border-amber-200/50 dark:border-amber-700/50">
+                  <Calendar className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span className="text-xs text-amber-700 dark:text-amber-300">
                     {card.createdAt
                       ? new Date(card.createdAt).toLocaleDateString("pt-BR", {
                           day: "2-digit",
@@ -316,37 +309,38 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                 </div>
               </div>
 
-              {/* Page corner fold effect */}
-              <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-amber-200 to-transparent transform rotate-45 translate-x-4 -translate-y-4"></div>
+              <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-amber-200 dark:from-amber-700 to-transparent transform rotate-45 translate-x-4 -translate-y-4"></div>
             </div>
           </div>
         ))}
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Editar Carta</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader className="space-y-3 pb-4 border-b border-border/50">
+            <DialogTitle className="text-xl">Editar Carta</DialogTitle>
+            <DialogDescription className="text-sm">
               Faça as alterações necessárias na carta e clique em salvar.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleUpdate)}
-              className="space-y-4"
+              className="space-y-5 pt-2"
             >
               <FormField
                 control={form.control}
                 name="front"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pergunta</FormLabel>
+                    <FormLabel className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      Pergunta
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Digite a pergunta..."
-                        className="resize-none"
-                        rows={3}
+                        className="resize-none min-h-[100px] border-2 focus:border-primary transition-colors"
                         {...field}
                       />
                     </FormControl>
@@ -359,12 +353,14 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                 name="back"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Resposta</FormLabel>
+                    <FormLabel className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      Resposta
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Digite a resposta..."
-                        className="resize-none"
-                        rows={4}
+                        className="resize-none min-h-[120px] border-2 focus:border-primary transition-colors"
                         {...field}
                       />
                     </FormControl>
@@ -372,7 +368,7 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                   </FormItem>
                 )}
               />
-              <DialogFooter>
+              <DialogFooter className="gap-2">
                 <Button
                   type="button"
                   variant="outline"
@@ -381,7 +377,11 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isUpdating}>
+                <Button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="bg-gradient-to-r from-primary to-accent"
+                >
                   {isUpdating && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -394,33 +394,35 @@ export default function ListarCard({ deckId }: ListarCardProps) {
       </Dialog>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirmar Exclusão</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-[450px]">
+          <DialogHeader className="space-y-3 pb-4 border-b border-border/50">
+            <DialogTitle className="text-xl">Confirmar Exclusão</DialogTitle>
+            <DialogDescription className="text-sm">
               Tem certeza que deseja excluir esta carta? Esta ação não pode ser
               desfeita.
             </DialogDescription>
           </DialogHeader>
           {deletingCard && (
             <div className="py-4">
-              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+              <div className="bg-muted/50 rounded-lg p-4 space-y-3 border border-border">
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-semibold text-muted-foreground flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
                     Pergunta:
                   </span>
-                  <p className="text-sm mt-1">{deletingCard.front}</p>
+                  <p className="text-sm">{deletingCard.front}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-semibold text-muted-foreground flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
                     Resposta:
                   </span>
-                  <p className="text-sm mt-1">{deletingCard.back}</p>
+                  <p className="text-sm">{deletingCard.back}</p>
                 </div>
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               type="button"
               variant="outline"

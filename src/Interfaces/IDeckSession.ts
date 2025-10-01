@@ -4,6 +4,6 @@ export interface IDeckSession {
   id: number;
   studentId: string;
   deckId: number;
-  createdAt: string; // ISO date string
+  createdAt: string;
   reviews?: IReview[];
 }

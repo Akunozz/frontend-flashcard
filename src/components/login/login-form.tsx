@@ -12,7 +12,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useEffect } from "react";
 
 // ----------------- Schema (Zod) -----------------
 const loginSchema = z.object({
@@ -85,7 +84,6 @@ export function LoginForm() {
           router.push("/student");
         }
       } catch (err) {
-        console.error(err);
         setError("root", { message: "Erro ao definir sessão." });
       }
     } else {
@@ -100,21 +98,20 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col gap-2 sm:gap-8">
+    <div className="flex flex-col gap-4 sm:gap-8">
       <div className="text-center space-y-4">
-        <div className="mx-auto w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-md sm:rounded-2xl flex items-center justify-center shadow-lg">
-          <BookOpen className="w-4 h-4 text-white" />
+        <div className="mx-auto w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl">
+          <BookOpen className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-3xl font-black text-foreground font-serif">
+          <h1 className="text-2xl sm:text-4xl font-black font-serif bg-gradient-to-r from-emerald-700 to-emerald-900 bg-clip-text text-transparent dark:text-white">
             FlashCards
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-lg font-medium dark:text-white">
+          <p className="text-muted-foreground text-sm sm:text-lg font-medium mt-2 dark:text-zinc-200">
             Aprenda de Forma Divertida
           </p>
         </div>
       </div>
-
       <Tabs
         value={currentTab}
         onValueChange={(v) =>
@@ -124,35 +121,31 @@ export function LoginForm() {
         }
         className="w-full"
       >
-        <TabsList className="mb-2 sm:mb-6 w-full grid grid-cols-2 h-9 sm:h-12 bg-slate-100 dark:bg-emerald-950 rounded-xl sm:p-1">
+        <TabsList className="mb-4 sm:mb-6 w-full grid grid-cols-2 h-11 sm:h-14 bg-muted/50 dark:bg-zinc-900 rounded-xl sm:p-1.5 border border-border dark:border-zinc-700">
           <TabsTrigger
             value="aluno"
-            className="flex items-center gap-2 rounded-lg font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-emerald-700 data-[state=active]:shadow-sm data-[state=active]:text-white"
+            className="flex items-center gap-2 rounded-lg font-semibold text-sm sm:text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 dark:data-[state=active]:from-green-900 dark:data-[state=active]:to-green-600 dark:data-[state=active]:text-white"
           >
-            <GraduationCap className="w-4 h-4" />
+            <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 dark:text-green-300" />
             Aluno
           </TabsTrigger>
           <TabsTrigger
             value="professor"
-            className="flex items-center gap-2 rounded-lg font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-emerald-700 data-[state=active]:shadow-sm data-[state=active]:text-white"
+            className="flex items-center gap-2 rounded-lg font-semibold text-sm sm:text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 dark:data-[state=active]:from-green-900 dark:data-[state=active]:to-green-600 dark:data-[state=active]:text-white"
           >
-            <BookOpen className="w-4 h-4" />
+            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 dark:text-green-300" />
             Professor
           </TabsTrigger>
         </TabsList>
 
         {/* Login ALUNO */}
         <TabsContent value="aluno" className="mt-0">
-          <div
-            className="overflow-hidden rounded-2xl shadow-xl 
-            bg-gradient-to-b from-white via-green-50 to-green-100
-            dark:from-green-200 dark:via-green-100 dark:to-green-200 pb-4"
-          >
-            <div className="gradient-bg text-center p-4 mb-6">
+          <div className="overflow-hidden rounded-2xl shadow-2xl bg-white to-card border-2 border-border dark:border-none pb-6">
+            <div className="bg-gradient-to-r from-emerald-700 to-emerald-900 text-center p-6 mb-6 dark:text-white">
               <h2 className="text-2xl font-bold text-white font-serif">
                 Bem-vindo, Estudante!
               </h2>
-              <p className="text-emerald-100 font-medium">
+              <p className="text-white/90 font-medium mt-1">
                 Desbloqueie seu conhecimento com flashcards
               </p>
             </div>
@@ -230,25 +223,25 @@ export function LoginForm() {
 
               <Button
                 type="submit"
-                className="w-full h-12 gradient-bg hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 rounded-xl font-semibold text-lg"
+                className="w-full h-12 bg-gradient-to-r from-emerald-700 to-emerald-900 text-white hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 rounded-xl font-semibold text-base"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-2 text-white">
+                  <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin w-5 h-5" />
                     Entrando...
                   </span>
                 ) : (
-                  <span className="text-white">Começar a Aprender</span>
+                  "Começar a Aprender"
                 )}
               </Button>
 
-              <div className="text-center">
-                <p className="text-slate-600 text-sm">
+              <div className="text-center pt-2">
+                <p className="text-muted-foreground text-sm">
                   Não tem conta?{" "}
                   <a
                     href="/cadastro"
-                    className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                    className="text-primary font-semibold"
                   >
                     Cadastre-se aqui
                   </a>
@@ -260,16 +253,12 @@ export function LoginForm() {
 
         {/* Login PROFESSOR */}
         <TabsContent value="professor" className="mt-0">
-          <div
-            className="overflow-hidden rounded-2xl shadow-xl 
-            bg-gradient-to-b from-white via-green-50 to-green-100
-            dark:from-green-200 dark:via-green-100 dark:to-green-200 pb-4"
-          >
-            <div className="gradient-bg text-center p-4 mb-6">
+          <div className="overflow-hidden rounded-2xl shadow-2xl bg-white to-card border-2 border-border dark:border-none pb-6">
+            <div className="bg-gradient-to-r from-emerald-700 to-emerald-900 text-center p-6 mb-6">
               <h2 className="text-2xl font-bold text-white font-serif">
                 Bem-vindo, Professor!
               </h2>
-              <p className="text-emerald-100 font-medium">
+              <p className="text-white/90 font-medium mt-1">
                 Crie e gerencie flashcards para seus alunos
               </p>
             </div>
@@ -349,25 +338,25 @@ export function LoginForm() {
 
               <Button
                 type="submit"
-                className="w-full h-12 gradient-bg hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 rounded-xl font-semibold text-lg"
+                className="w-full h-12 bg-gradient-to-r from-emerald-700 to-emerald-900 text-white hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 rounded-xl font-semibold text-base"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-2 text-white">
+                  <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin w-5 h-5" />
                     Entrando...
                   </span>
                 ) : (
-                  <span className="text-white">Acessar Painel</span>
+                  "Acessar Painel"
                 )}
               </Button>
 
-              <div className="text-center">
-                <p className="text-slate-600 text-sm">
+              <div className="text-center pt-2">
+                <p className="text-muted-foreground text-sm">
                   Não tem conta?{" "}
                   <a
                     href="/cadastro"
-                    className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                    className="text-primary font-semibold hover:text-accent transition-colors"
                   >
                     Cadastre-se aqui
                   </a>

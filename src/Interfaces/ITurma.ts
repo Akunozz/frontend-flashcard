@@ -14,6 +14,7 @@ export interface ITurmaAluno {
   studentId: string;
   joinedAt: string;
   turma: ITurma;
+  professor?: IProfessor;
 }
 
 export interface ITurma {
@@ -25,9 +26,13 @@ export interface ITurma {
   createdAt: string;
   updatedAt: string;
   professor?: IProfessor;
-  turmaAluno?: any[];
+  turmaAluno?: ITurmaAluno;
   alunosCount?: number;
   decksCount?: number;
+  _count?: {
+    turmaAluno?: number;
+    decks?: number;
+  };
 }
 
 export interface ITurmaCreate {
