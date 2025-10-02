@@ -18,60 +18,79 @@ import {
   Zap,
   Star,
 } from "lucide-react";
-import { useCardsFromDeck, useCreateSessionWithReviews } from "@/hooks/deckSession/reqDeckSession";
+import {
+  useCardsFromDeck,
+  useDeckSession,
+} from "@/hooks/deckSession/reqDeckSession";
+import Cookies from "js-cookie";
 
 export default function StudyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const deckId = Number(searchParams.get("deckId"));
-  const studentId = typeof window !== "undefined" ? localStorage.getItem("studentId") || "" : "";
+  // Garante que sempre será string e mostra log para debug
+  const studentId = Cookies.get("studentId") ?? "";
+  useEffect(() => {
+    console.log("Cookies:", document.cookie);
+    console.log("studentId extraído:", studentId);
+  }, [studentId]);
 
-  const { data: cards = [], isLoading, isError, error } = useCardsFromDeck(deckId);
-  const { mutate: createSession } = useCreateSessionWithReviews();
+  const {
+    data: cards = [],
+    isLoading,
+    isError,
+    error,
+  } = useCardsFromDeck(deckId);
+  const { mutate: createSession } = useDeckSession();
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const [startTime] = useState(Date.now());
-  const [endTime, setEndTime] = useState<number | null>(null);
-  const [isPaused, setIsPaused] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [streak, setStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
-  const [sessionTime, setSessionTime] = useState(0);
-
-  const [reviews, setReviews] = useState<{ cardId: number; result: "CORRECT" | "INCORRECT" }[]>([]);
+  const [reviews, setReviews] = useState<
+    { cardId: number; result: "CORRECT" | "INCORRECT" }[]
+  >([]);
   const sessionPostedRef = useRef(false);
 
-  useEffect(() => {
-    if (!isPaused && !isFinished) {
-      const interval = setInterval(() => {
-        setSessionTime((prev) => prev + 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [isPaused, isFinished]);
-  if (isLoading) return <div className="p-8 text-center">Carregando cards...</div>;
-  if (isError) return <div className="p-8 text-center text-red-500">{error?.message || "Erro ao buscar cards."}</div>;
-  if (!cards.length) return <div className="p-8 text-center">Nenhum card encontrado.</div>;
+  if (isLoading)
+    return <div className="p-8 text-center">Carregando cards...</div>;
+  if (isError)
+    return (
+      <div className="p-8 text-center text-red-500">
+        {error?.message || "Erro ao buscar cards."}
+      </div>
+    );
+  if (!cards.length)
+    return <div className="p-8 text-center">Nenhum card encontrado.</div>;
 
   const currentCard = cards[currentCardIndex];
-  const progress = ((currentCardIndex + (isFinished ? 1 : 0)) / cards.length) * 100;
+  const progress =
+    ((currentCardIndex + (isFinished ? 1 : 0)) / cards.length) * 100;
   const answeredCards = correctAnswers + incorrectAnswers;
-  const accuracy = answeredCards ? Math.round((correctAnswers / answeredCards) * 100) : 0;
+  const accuracy = answeredCards
+    ? Math.round((correctAnswers / answeredCards) * 100)
+    : 0;
 
-  const finishSession = (finalReviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[]) => {
+  const finishSession = (
+    finalReviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[]
+  ) => {
     setIsFinished(true);
-    setEndTime(Date.now());
-    if (!sessionPostedRef.current && studentId && deckId && finalReviews.length) {
-      sessionPostedRef.current = true;
-      createSession({ studentId, deckId, reviews: finalReviews });
+    if (!studentId) {
+      // Handle missing studentId, e.g., redirect or show error
+      alert("ID do estudante não encontrado. Faça login novamente.");
+      return;
     }
+    createSession({ studentId, deckId, reviews: finalReviews });
+    
   };
 
-  const advanceToNextCard = (finalReviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[]) => {
+  const advanceToNextCard = (
+    finalReviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[]
+  ) => {
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex((prev) => prev + 1);
       setIsFlipped(false);
@@ -88,9 +107,15 @@ export default function StudyPage() {
   const handleAnswer = (correct: boolean) => {
     if (answered) return;
     setAnswered(true);
-    const updatedReviews = [
+    const updatedReviews: {
+      cardId: number;
+      result: "CORRECT" | "INCORRECT";
+    }[] = [
       ...reviews,
-      { cardId: currentCard.id ?? 0, result: correct ? "CORRECT" : "INCORRECT" },
+      {
+        cardId: currentCard.id ?? 0,
+        result: correct ? "CORRECT" : "INCORRECT",
+      },
     ];
     setReviews(updatedReviews);
     if (correct) {
@@ -106,24 +131,7 @@ export default function StudyPage() {
     }
     setTimeout(() => {
       advanceToNextCard(updatedReviews);
-    }, 1200);
-  };
-
-  const skipCard = () => {
-    setIncorrectAnswers((prev) => prev + 1);
-    setStreak(0);
-    const updatedReviews = [
-      ...reviews,
-      { cardId: currentCard.id ?? 0, result: "INCORRECT" },
-    ];
-    setReviews(updatedReviews);
-    advanceToNextCard(updatedReviews);
-  };
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+    }, 500);
   };
 
   const getPerformanceColor = (percentage: number) => {
@@ -140,28 +148,8 @@ export default function StudyPage() {
     return "Continue praticando! 💪";
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy": return "bg-green-100 text-green-800";
-      case "medium": return "bg-yellow-100 text-yellow-800";
-      case "hard": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getDifficultyText = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy": return "Fácil";
-      case "medium": return "Médio";
-      case "hard": return "Difícil";
-      default: return difficulty;
-    }
-  };
-
   // Results screen
   if (isFinished) {
-    const totalTime = endTime ? Math.floor((endTime - startTime) / 1000) : sessionTime;
-
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="max-w-md mx-auto pt-8">
@@ -183,17 +171,25 @@ export default function StudyPage() {
                     <Target className="w-4 h-4" />
                     Precisão:
                   </span>
-                  <span className={`font-bold text-lg ${getPerformanceColor(accuracy)}`}>
+                  <span
+                    className={`font-bold text-lg ${getPerformanceColor(
+                      accuracy
+                    )}`}
+                  >
                     {accuracy}%
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Acertos:</span>
-                  <span className="font-medium text-green-600">{correctAnswers}</span>
+                  <span className="font-medium text-green-600">
+                    {correctAnswers}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Erros:</span>
-                  <span className="font-medium text-red-600">{incorrectAnswers}</span>
+                  <span className="font-medium text-red-600">
+                    {incorrectAnswers}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center gap-2">
@@ -204,28 +200,32 @@ export default function StudyPage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Tempo:
-                  </span>
-                  <span className="font-medium">{formatTime(totalTime)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-2">
                     <Star className="w-4 h-4" />
                     Pontos:
                   </span>
-                  <span className="font-medium text-purple-600">{correctAnswers * 10 + maxStreak * 5}</span>
+                  <span className="font-medium text-purple-600">
+                    {correctAnswers * 10 + maxStreak * 5}
+                  </span>
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="font-medium text-lg">{getPerformanceMessage(accuracy)}</p>
+                <p className="font-medium text-lg">
+                  {getPerformanceMessage(accuracy)}
+                </p>
               </div>
               <div className="space-y-3">
-                <Button onClick={() => window.location.reload()} className="w-full">
+                <Button
+                  onClick={() => window.location.reload()}
+                  className="w-full"
+                >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Estudar Novamente
                 </Button>
-                <Button variant="outline" onClick={() => router.back()} className="w-full">
+                <Button
+                  variant="outline"
+                  onClick={() => router.back()}
+                  className="w-full"
+                >
                   Voltar aos Decks
                 </Button>
               </div>
@@ -250,17 +250,10 @@ export default function StudyPage() {
               {currentCardIndex + 1} de {cards.length}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)}>
-            {isPaused ? <PlayIcon className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
-          </Button>
         </div>
         <Progress value={progress} className="h-2 mb-3" />
         {/* Stats Row */}
         <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            <span>{formatTime(sessionTime)}</span>
-          </div>
           <div className="flex items-center gap-1">
             <Zap className="w-4 h-4 text-orange-500" />
             <span>{streak}</span>
@@ -283,7 +276,9 @@ export default function StudyPage() {
               <div className="text-center space-y-4">
                 {!isFlipped ? (
                   <>
-                    <div className="font-medium text-center">{currentCard.front}</div>
+                    <div className="font-medium text-center">
+                      {currentCard.front}
+                    </div>
                     <div className="text-sm text-gray-500 flex items-center justify-center gap-2">
                       <RotateCcw className="w-4 h-4" />
                       Toque para ver a resposta
@@ -292,7 +287,9 @@ export default function StudyPage() {
                 ) : (
                   <>
                     <div className="text-sm text-gray-600 mb-2">Resposta:</div>
-                    <div className="font-medium text-center">{currentCard.back}</div>
+                    <div className="font-medium text-center">
+                      {currentCard.back}
+                    </div>
                   </>
                 )}
               </div>
@@ -318,20 +315,14 @@ export default function StudyPage() {
                   Acertei
                 </Button>
               </div>
-              <Button
-                variant="ghost"
-                className="w-full text-gray-500"
-                onClick={skipCard}
-              >
-                <SkipForward className="w-4 h-4 mr-2" />
-                Pular card
-              </Button>
             </div>
           )}
           {answered && (
             <div className="mt-6 text-center">
               <div className="text-sm text-gray-600">
-                {currentCardIndex === cards.length - 1 ? "Finalizando..." : "Próximo card..."}
+                {currentCardIndex === cards.length - 1
+                  ? "Finalizando..."
+                  : "Próximo card..."}
               </div>
             </div>
           )}
@@ -349,7 +340,9 @@ export default function StudyPage() {
             <div className="text-gray-500">Erros</div>
           </div>
           <div className="text-center">
-            <div className="font-medium text-blue-600">{cards.length - currentCardIndex - 1}</div>
+            <div className="font-medium text-blue-600">
+              {cards.length - currentCardIndex - 1}
+            </div>
             <div className="text-gray-500">Restantes</div>
           </div>
         </div>

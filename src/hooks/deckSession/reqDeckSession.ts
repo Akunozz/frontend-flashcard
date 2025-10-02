@@ -3,6 +3,7 @@ import type { ICard } from "@/Interfaces/ICard";
 import type { IDeckSession } from "@/Interfaces/IDeckSession";
 import { API_BASE_URL } from "@/lib/api";
 
+
 // GET /deck-sessions/decks/:deckId/cards
 export async function getCardsFromDeck(deckId: number): Promise<ICard[]> {
 	const response = await fetch(`${API_BASE_URL}/deck-sessions/decks/${deckId}/cards`);
@@ -19,7 +20,7 @@ export function useCardsFromDeck(deckId: number) {
 }
 
 // POST /deck-sessions
-export async function createSessionWithReviews(data: { studentId: string; deckId: number; reviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[] }): Promise<IDeckSession> {
+export async function reqDeckSession(data: { studentId: string; deckId: number; reviews: { cardId: number; result: "CORRECT" | "INCORRECT" }[] }): Promise<IDeckSession> {
 	const response = await fetch(`${API_BASE_URL}/deck-sessions`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -29,12 +30,16 @@ export async function createSessionWithReviews(data: { studentId: string; deckId
 	return response.json();
 }
 
-export function useCreateSessionWithReviews() {
+export function useDeckSession() {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: createSessionWithReviews,
-		onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["deckSessionCards"] });
-        }
-	});
+    mutationFn: reqDeckSession,
+    onSuccess: (data) => {
+      console.log("Sessão criada com sucesso:", data);
+      queryClient.invalidateQueries({ queryKey: ["deckSessionCards"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao criar sessão:", error);
+    },
+  });
 }
