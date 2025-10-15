@@ -41,7 +41,6 @@ export default function EntrarTurma({ studentId }: EntrarTurmaProps) {
     register,
     handleSubmit,
     reset,
-    setError,
     formState: { isSubmitting },
   } = useForm<EntrarTurmaValues>({
     resolver: zodResolver(entrarTurmaSchema),
@@ -60,12 +59,7 @@ export default function EntrarTurma({ studentId }: EntrarTurmaProps) {
       reset();
       setTimeout(() => setOpen(false), 500);
     } catch (err: any) {
-      const errorMessage =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Erro ao entrar na turma.";
-      setError("root", { message: errorMessage });
-      toast.error(errorMessage);
+      toast.error(err?.message || "Erro ao entrar na turma");
     }
   };
 
@@ -113,7 +107,7 @@ export default function EntrarTurma({ studentId }: EntrarTurmaProps) {
             type="submit"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
-            className="w-full h-12 gap-2 shadow-lg shadow-primary/20"
+            className="w-full h-12 gap-2 shadow-lg shadow-primary/20 text-white"
           >
             {isSubmitting ? (
               <>

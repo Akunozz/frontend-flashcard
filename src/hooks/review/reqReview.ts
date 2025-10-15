@@ -2,14 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import type { IReview } from "@/Interfaces/IReview";
 import { API_BASE_URL } from "@/lib/api";
 
-// Interface para as estatísticas de reviews por turma
-export interface IReviewStats {
-  cardId: number;
-  correct: number;
-  incorrect: number;
-}
-
-// GET /reviews - buscar todas as reviews
 export async function getAllReviews(): Promise<IReview[]> {
   const response = await fetch(`${API_BASE_URL}/reviews`);
   if (!response.ok) throw new Error("Erro ao buscar reviews");
@@ -25,7 +17,6 @@ export function useReviews() {
   });
 }
 
-// GET /reviews/:id - buscar review por ID
 export async function getReviewById(id: number): Promise<IReview> {
   const response = await fetch(`${API_BASE_URL}/reviews/${id}`);
   if (!response.ok) throw new Error("Erro ao buscar review");
@@ -40,19 +31,33 @@ export function useReview(id: number) {
   });
 }
 
-// GET /reviews/turmas/:turmaId - buscar estatísticas de reviews por turma
-export async function getReviewStatsByTurmaId(turmaId: number): Promise<IReviewStats[]> {
+export async function getReviewStatsByTurmaId(
+  turmaId: number
+): Promise<IReview[]> {
   const response = await fetch(`${API_BASE_URL}/reviews/turmas/${turmaId}`);
-  if (!response.ok) throw new Error("Erro ao buscar estatísticas de reviews da turma");
+  if (!response.ok)
+    throw new Error("Erro ao buscar estatísticas de reviews da turma");
   return response.json();
 }
 
 export function useReviewStatsByTurma(turmaId: number) {
-  return useQuery<IReviewStats[]>({
+  return useQuery<IReview[]>({
     queryKey: ["reviews", "turmas", turmaId],
     queryFn: () => getReviewStatsByTurmaId(turmaId),
     enabled: !!turmaId,
-    staleTime: 30_000,
-    refetchOnWindowFocus: false,
+  });
+}
+
+export async function getReviewByDeckId(deckId: number): Promise<IReview[]> {
+  const response = await fetch(`${API_BASE_URL}/reviews/decks/${deckId}`);
+  if (!response.ok) throw new Error("Erro ao buscar reviews do deck");
+  return response.json();
+}
+
+export function useReviewsByDeck(deckId: number) {
+  return useQuery<IReview[]>({
+    queryKey: ["reviews", "decks", deckId],
+    queryFn: () => getReviewByDeckId(deckId),
+    enabled: !!deckId,
   });
 }

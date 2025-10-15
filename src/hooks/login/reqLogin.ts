@@ -22,8 +22,8 @@ export async function reqLogin(
         message: data.message,
       };
     } else {
-      const error = await response.text();
-      return { error };
+      const json = await response.json();
+      throw new Error(json.message || json.error || "Erro ao fazer login");
     }
   } catch (error: any) {
     return { error: error.message };

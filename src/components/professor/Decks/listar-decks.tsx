@@ -276,7 +276,11 @@ export default function ListarDeck({ turmaId, aluno }: ListarDeckProps) {
                   className="bg-primary text-white dark:bg-primary dark:text-white gap-2"
                   size="sm"
                   onClick={() => {
-                    router.push(`/student/study?deckId=${deck.id}`);
+                    const params = new URLSearchParams({
+                      title: deck.title || "",
+                      description: deck.description || "",
+                    }).toString();
+                    router.push(`/student/study?deckId=${deck.id}&${params}`);
                   }}
                 >
                   <Play />

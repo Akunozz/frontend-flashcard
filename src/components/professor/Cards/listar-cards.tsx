@@ -33,6 +33,8 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  CircleX,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRef, useState } from "react";
@@ -133,32 +135,6 @@ export default function ListarCard({ deckId }: ListarCardProps) {
     }
   };
 
-  const scrollToIndex = (idx: number) => {
-    if (scrollContainerRef.current) {
-      const cardWidth = 288;
-      scrollContainerRef.current.scrollTo({
-        left: idx * cardWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollLeft = () => {
-    if (currentIndex > 0) {
-      const newIndex = currentIndex - 1;
-      setCurrentIndex(newIndex);
-      scrollToIndex(newIndex);
-    }
-  };
-
-  const scrollRight = () => {
-    if (currentIndex < cards.length - 1) {
-      const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);
-      scrollToIndex(newIndex);
-    }
-  };
-
   if (loading)
     return (
       <div className="flex justify-center py-16">
@@ -203,32 +179,13 @@ export default function ListarCard({ deckId }: ListarCardProps) {
   return (
     <div className="relative">
       <div className="flex justify-between items-center mb-6">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={scrollLeft}
-          disabled={currentIndex === 0}
-          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background to-secondary/50 backdrop-blur-sm border-2 hover:border-primary disabled:opacity-50"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
 
         <div className="text-center">
-          <h3 className="font-bold text-lg text-foreground">Flashcards</h3>
           <p className="text-sm text-muted-foreground">
             {cards.length} {cards.length === 1 ? "carta" : "cartas"} disponíveis
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={scrollRight}
-          disabled={currentIndex === cards.length - 1}
-          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background to-secondary/50 backdrop-blur-sm border-2 hover:border-primary disabled:opacity-50"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </Button>
       </div>
 
       <div
@@ -317,10 +274,10 @@ export default function ListarCard({ deckId }: ListarCardProps) {
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader className="space-y-3 pb-4 border-b border-border/50">
+          <DialogHeader className="pb-2 border-b border-border/50">
             <DialogTitle className="text-xl">Editar Carta</DialogTitle>
             <DialogDescription className="text-sm">
-              Faça as alterações necessárias na carta e clique em salvar.
+              Faça as alterações e clique em salvar.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -368,23 +325,26 @@ export default function ListarCard({ deckId }: ListarCardProps) {
                   </FormItem>
                 )}
               />
-              <DialogFooter className="gap-2">
+              <DialogFooter className="flex-row gap-2 items-center">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditDialogOpen(false)}
                   disabled={isUpdating}
+                  className="w-1/2"
                 >
+                  <CircleX/>
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={isUpdating}
-                  className="bg-gradient-to-r from-primary to-accent"
+                  className="bg-gradient-to-r from-primary to-accent w-1/2"
                 >
                   {isUpdating && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
+                  <Save />
                   Salvar
                 </Button>
               </DialogFooter>

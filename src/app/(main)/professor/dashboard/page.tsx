@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 export default async function ProfessorPage() {
   const cookieStore = await cookies();
   const professorId = cookieStore.get("id")?.value;
+  
   return (
     <main>
       <header className="flex items-center justify-center mb-6">

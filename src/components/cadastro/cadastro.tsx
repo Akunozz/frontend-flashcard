@@ -16,6 +16,9 @@ import {
   GraduationCap,
   UserPlus,
   Loader2,
+  Eye,
+  EyeClosed,
+  EyeOff,
 } from "lucide-react";
 import { reqCadastro } from "@/hooks/login/reqCadastro";
 import { useForm, Controller } from "react-hook-form";
@@ -23,6 +26,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
 
 // ----------------- Schema (Zod) -----------------
 const cadastroSchema = z.object({
@@ -41,6 +45,7 @@ type CadastroValues = z.infer<typeof cadastroSchema>;
 
 export default function Cadastro() {
   const router = useRouter();
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
 
   const {
     register,
@@ -71,24 +76,23 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-8">
-      {/* Header */}
+    <div className="flex flex-col gap-4 p-4">
       <div className="text-center space-y-4">
-        <div className="mx-auto w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl">
-          <UserPlus className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
+        <div className="mx-auto w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-xl">
+          <UserPlus className="w-12 h-12 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl sm:text-4xl font-black font-serif bg-gradient-to-r from-emerald-700 to-emerald-900 bg-clip-text text-transparent dark:text-white">
+          <h1 className="text-2xl font-bold font-serif text-emerald-500">
             Criar Conta
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-lg font-medium mt-2 dark:text-zinc-200">
+          <p className="text-muted-foreground text-sm font-medium mt-2 dark:text-gray-300">
             Preencha os dados para começar
           </p>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl shadow-2xl bg-white to-card border-2 border-border dark:border-none pb-6">
-        <div className="bg-gradient-to-r from-emerald-700 to-emerald-900 text-center p-6 mb-6 dark:text-white">
+      <div className="overflow-hidden rounded-2xl shadow-2xl bg-white to-card pb-6">
+        <div className="bg-gradient-to-r from-primary to-emerald-700 text-center p-6 mb-6 dark:text-white">
           <h2 className="text-2xl font-bold text-white font-serif">
             Comece sua Jornada
           </h2>
@@ -110,7 +114,7 @@ export default function Cadastro() {
               <Input
                 id="name"
                 type="text"
-                placeholder="Seu nome completo"
+                placeholder="Digite seu nome"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? "name-error" : undefined}
                 className="h-12 border-2 border-zinc-500 dark:border-zinc-700 dark:bg-green-50 focus:border-emerald-500 
@@ -150,7 +154,7 @@ export default function Cadastro() {
             </div>
 
             {/* Senha */}
-            <div className="space-y-1">
+            <div className="space-y-1 relative">
               <Label
                 htmlFor="password"
                 className="text-base font-semibold text-slate-700"
@@ -159,16 +163,23 @@ export default function Cadastro() {
               </Label>
               <Input
                 id="password"
-                type="password"
-                placeholder="*******"
+                type={senhaVisivel ? "text" : "password"}
+                placeholder="••••••••"
                 aria-invalid={!!errors.password}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
                 }
-                className="h-12 border-2 border-zinc-500 dark:border-zinc-700 dark:bg-green-50 focus:border-emerald-500 
-                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
+                className="h-12 border-2 border-zinc-500 dark:border-zinc-700 dark:bg-green-50 focus:border-emerald-500 rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500 pr-12"
                 {...register("password")}
               />
+              <button
+                type="button"
+                onClick={() => setSenhaVisivel((v) => !v)}
+                className="absolute right-4 top-10 text-gray-500 hover:text-primary transition-colors"
+                aria-label={senhaVisivel ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {senhaVisivel ? <Eye /> : <EyeOff />}
+              </button>
               {errors.password && (
                 <p id="password-error" className="text-red-600 text-xs mt-1">
                   {errors.password.message}
@@ -196,21 +207,27 @@ export default function Cadastro() {
                   >
                     <SelectTrigger
                       id="role"
-                      className="h-12 border-2 border-zinc-500 dark:border-zinc-700 dark:bg-green-50 focus:border-emerald-500 
-                        rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
+                      className="flex justify-center h-12 border-2 w-full border-zinc-500 dark:border-zinc-700 dark:bg-green-50 focus:border-emerald-500 
+                      rounded-xl dark:text-black focus:ring-0 dark:focus:border-emerald-500"
                     >
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
-                      <SelectItem value="STUDENT" className="rounded-lg h-12">
+                      <SelectItem
+                        value="STUDENT"
+                        className="rounded-lg h-12 flex justify-center"
+                      >
                         <div className="flex items-center gap-3">
-                          <GraduationCap className="w-5 h-5 text-emerald-600" />
+                          <GraduationCap className="w-5 h-5 text-black" />
                           <span className="text-base">Aluno</span>
                         </div>
                       </SelectItem>
-                      <SelectItem value="PROFESSOR" className="rounded-lg h-12">
+                      <SelectItem
+                        value="PROFESSOR"
+                        className="rounded-lg h-12 flex justify-center"
+                      >
                         <div className="flex items-center gap-3">
-                          <BookOpen className="w-5 h-5 text-emerald-600" />
+                          <BookOpen className="w-5 h-5 text-black" />
                           <span className="text-base">Professor</span>
                         </div>
                       </SelectItem>
@@ -249,7 +266,7 @@ export default function Cadastro() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-gradient-to-r from-emerald-700 to-emerald-900 text-white hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 rounded-xl font-semibold text-base"
+            className="w-full h-12 bg-gradient-to-r from-primary to-emerald-700 text-white hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 rounded-xl font-semibold text-base"
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2 text-white">

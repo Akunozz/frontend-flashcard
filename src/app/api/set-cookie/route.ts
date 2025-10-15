@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
   });
 
   response.cookies.set("id", id, {
-    httpOnly: true,
     secure: true,
     sameSite: "strict",
     path: "/",
@@ -26,7 +25,6 @@ export async function POST(req: NextRequest) {
   });
   
   response.cookies.set("role", role, {
-    //httpOnly: true,
     secure: true,
     sameSite: "strict",
     path: "/",

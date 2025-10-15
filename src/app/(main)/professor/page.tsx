@@ -1,14 +1,16 @@
 import ListarTurmas from "@/components/professor/turma/listar-turmas";
 import { cookies } from "next/headers";
+import { reqListarTurmasProfessor } from "@/hooks/turma/reqTurma";
 
 export default async function ProfessorPage() {
   const cookieStore = await cookies();
   const professorId = cookieStore.get("id")?.value;
   const professorName = cookieStore.get("name")?.value;
+  const initialTurmas = await reqListarTurmasProfessor(professorId ?? "");
 
   return (
     <main className="space-y-8">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 p-8 shadow-xl">
+      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 p-8 shadow-xl">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="relative space-y-2">
           <h1 className="text-4xl font-bold text-white">
@@ -19,7 +21,7 @@ export default async function ProfessorPage() {
             Acompanhe o progresso das suas turmas e gerencie seus conteúdos
           </p>
         </div>
-      </div>
+      </header>
 
       {/* <section className="space-y-4">
         <div className="flex items-center gap-2">
@@ -119,7 +121,12 @@ export default async function ProfessorPage() {
             Turmas Recentes
           </h2>
         </div>
-        <ListarTurmas professorId={professorId ?? ""} latestOnly horizontal />
+        <ListarTurmas 
+        professorId={professorId ?? ""} 
+        latestOnly 
+        horizontal 
+        initialTurmas={initialTurmas}
+        />
       </section>
     </main>
   );

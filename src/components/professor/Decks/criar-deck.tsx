@@ -5,7 +5,7 @@ import { reqCreateDeck } from "@/hooks/decks/reqDeck";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Plus, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Label } from "../../ui/label";

@@ -28,7 +28,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Loader from "@/components/loading/loader";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -65,12 +65,14 @@ interface ListarTurmasProps {
   professorId: string;
   latestOnly?: boolean;
   horizontal?: boolean;
+  initialTurmas?: ITurma[];
 }
 
 export default function ListarTurmas({
   professorId,
   latestOnly = false,
   horizontal = false,
+  initialTurmas,
 }: ListarTurmasProps) {
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -79,27 +81,24 @@ export default function ListarTurmas({
   const [editingTurma, setEditingTurma] = useState<ITurma | null>(null);
   const updateTurmaMutation = useUpdateTurma(professorId);
 
-  const {
-    data: turmasRaw,
-    isLoading,
-    isError,
-  } = useQuery<ITurma[]>({
-    queryKey: ["turma", professorId],
+  const turmasRaw = useQuery<ITurma[]>({
+    queryKey: ["turmas", professorId],
     queryFn: () => reqListarTurmasProfessor(professorId),
+    initialData: initialTurmas,
   });
 
-  const turmas = useMemo(() => {
-    if (!turmasRaw) return [];
+  const getLast5turmas = useMemo(() => {
+    if (!turmasRaw.data) return [];
     if (latestOnly) {
-      return [...turmasRaw]
+      return [...turmasRaw.data]
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
         .slice(0, 5);
     }
-    return turmasRaw;
-  }, [turmasRaw, latestOnly]);
+    return turmasRaw.data;
+  }, [turmasRaw.data, latestOnly]);
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
@@ -153,12 +152,14 @@ export default function ListarTurmas({
     toast.success(`Código ${code} copiado!`);
   };
 
-  if (isLoading) return <Loader />;
-  if (isError)
+  if (turmasRaw.isPending) return <Loader />;
+
+  if (turmasRaw.isError)
     return (
       <div className="text-destructive font-medium">Erro ao buscar turmas.</div>
     );
-  if (!turmas || turmas.length === 0)
+
+  if (!getLast5turmas || getLast5turmas.length === 0)
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-border rounded-2xl bg-gradient-to-br from-muted/30 to-muted/10">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4">
@@ -179,7 +180,7 @@ export default function ListarTurmas({
           : "grid gap-4 md:grid-cols-2 lg:grid-cols-3"
       }
     >
-      {turmas.map((turma) => (
+      {getLast5turmas.map((turma) => (
         <Card
           key={turma.id}
           className="min-w-[280px] group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 bg-gradient-to-br from-white via-white to-emerald-50 dark:border-none dark:from-zinc-800 dark:via-zinc-800 dark:to-zinc-700"

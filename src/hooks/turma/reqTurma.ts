@@ -102,7 +102,7 @@ export async function reqCriarTurma(data: ITurmaCreate): Promise<ITurma> {
     if (response.ok) {
       return json.turma as ITurma;
     } else {
-      throw new Error(json.error || "Erro ao criar turma");
+      throw new Error(json.message || json.error || "Erro ao criar turma");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");
@@ -116,7 +116,7 @@ export async function deleteTurma(id: number): Promise<void> {
     });
     if (!response.ok) {
       const json = await response.json();
-      throw new Error(json.error || "Erro ao deletar turma");
+      throw new Error(json.message || json.error || "Erro ao deletar turma");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");
@@ -132,7 +132,7 @@ export async function addAluno(token: string, studentId: string): Promise<void> 
     });
     if (!response.ok) {
       const json = await response.json();
-      throw new Error(json.error || "Erro ao adicionar aluno");
+      throw new Error(json.message || json.error || "Erro ao adicionar aluno");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");
@@ -148,7 +148,7 @@ export default async function reqTurmaById(id: string): Promise<ITurma> {
     } else if (response.ok) {
       return json as ITurma;
     } else {
-      throw new Error(json.error || "Erro ao buscar turma");
+      throw new Error(json.message || json.error || "Erro ao buscar turma");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");
@@ -167,7 +167,7 @@ export async function reqUpdateTurma(data: Partial<ITurma> & { id: number }): Pr
     if (response.ok) {
       return json.turma as ITurma;
     } else {
-      throw new Error(json.error || "Erro ao atualizar turma");
+      throw new Error(json.message || json.error || "Erro ao atualizar turma");
     }
   } catch (error: any) {
     throw new Error(error?.message || "Erro de conexão");

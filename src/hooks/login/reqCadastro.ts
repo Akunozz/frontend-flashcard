@@ -23,8 +23,8 @@ export async function reqCadastro(
       const data = await response.json();
       return { user: data.user, message: data.message };
     } else {
-      const error = await response.text();
-      return { error };
+      const json = await response.json();
+      throw new Error(json.message || json.error || "Erro ao fazer cadastro");
     }
   } catch (error: any) {
     return { error: error.message };
